@@ -1,104 +1,69 @@
-#Momo and Abhiram - Make menu
-from __future__ import annotations
-
-from typing import Any, Callable, TYPE_CHECKING
-
-import matplotlib.artist as artist
-import matplotlib.patches as patches
+import typing
+from color_map import color_map
+from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
-from matplotlib.transforms import IdentityTransform
+from matplotlib.patches import Polygon
+from tkinter import *
 
-if TYPE_CHECKING:
-    from matplotlib.figure import Figure
+MAP: Basemap = Basemap(llcrnrlon=-130, llcrnrlat=25, urcrnrlon=-65.,urcrnrlat=52., lat_0 = 40., lon_0 = -80)
 
-# select what you want to filter by - deaths, hospitalizations, or cases
-# select the day, month, year
+root: Tk = Tk()
+root.geometry('400x300')
+root.config(bg='#F2B90C')
 
-# fontsize, label color, background color, alpha = 1.0
+current_choice = 'cases'
+current_day = 0
+current_month = 0
+current_year = 2020
 
-class MenuItem(artist.Artist):
-    padx = 5
-    pady = 5
+def on_select_option(choice: str) -> None:
+    current_choice = choice
+    print(current_choice)
 
-    def __init__(self, fig: Figure, label_str: str, on_select: Callable[..., Any]) -> None:
-        super().__init__()
+def on_select_days(choice: int) -> None:
+    print(choice)
+    current_day = choice
 
-        self.set_figure(fig)
-        self.label_str = label_str
+def on_select_year(choice: int) -> None:
+    print(choice)
+    current_year = choice
 
-        self.props = (14, 'black', 'white', 1.0)
-        self.hoverprops = (14, 'black', 'white', 1.0)
+def on_select_month(choice: int) -> None:
+    print(choice)
+    current_month = choice
 
-        self.on_select = on_select
+def on_click() -> None:
+    print(current_choice, current_day, current_month, current_year)
+    color_map(MAP, current_choice, int(current_day), int(current_month), int(current_year))
 
-        self.label = fig.text(0, 0, label_str, transform=IdentityTransform(), size=self.props[0])
-        self.text_bbox = self.label.get_window_extent(
-            fig.canvas.get_renderer()
-        )
+OPTIONS = ('cases', 'deaths', 'hospitalized')
 
-        self.rect = patches.Rectangle((0, 0), 1, 1)  # Will be updated later.
+variable = StringVar()
+variable.set(OPTIONS[0])
 
-        self.set_hover_props(False)
+option_dropdown = OptionMenu(root, variable, *OPTIONS, command=on_select_option)
+option_dropdown.pack(expand=True)
 
-        fig.canvas.mpl_connect('button_release_event', self.check_select)
+DAYS = tuple(range(32))
+variable = IntVar()
 
-    def check_select(self, event):
-        over, _ = self.rect.contains(event)
-        if not over:
-            return
-        if self.on_select is not None:
-            self.on_select(self)
+day_dropdown = OptionMenu(root, variable, *DAYS, command=on_select_days)
+day_dropdown.pack(expand=True)
 
-    def set_extent(self, x, y, w, h, depth):
-        self.rect.set(x=x, y=y, width=w, height=h)
-        self.label.set(position=(x + self.padx, y + depth + self.pady/2))
-        self.hover = False
+MONTHS = tuple(range(13))
+variable = IntVar()
 
-    def draw(self, renderer):
-        self.rect.draw(renderer)
-        self.label.draw(renderer)
+month_dropdown = OptionMenu(root, variable, *MONTHS, command=on_select_month)
+month_dropdown.pack(expand=True)
 
-    def set_hover_props(self, b):
-        props = self.hoverprops if b else self.props
-        self.label.set(color=props[1])
-        self.rect.set(facecolor=props[2], alpha=props[3])
+YEARS = (2020, 2021)
+variable = IntVar()
+variable.set(YEARS[0])
 
-    def set_hover(self, event):
-        b, _ = self.rect.contains(event)
-        changed = (b != self.hover)
-        if changed:
-            self.set_hover_props(b)
-        self.hover = b
-        return changed
-
-
-class Menu:
-    def __init__(self, fig: Figure, menuitems) -> None:
-        self.figure = fig
-
-        self.menuitems = menuitems
-
-        maxw = max(item.text_bbox.width for item in menuitems)
-        maxh = max(item.text_bbox.height for item in menuitems)
-        depth = max(-item.text_bbox.y0 for item in menuitems)
-
-        x0 = 100
-        y0 = 400
-
-        width = maxw + 2*MenuItem.padx
-        height = maxh + MenuItem.pady
-
-        for item in menuitems:
-            left = x0
-            bottom = y0 - maxh - MenuItem.pady
-
-            item.set_extent(left, bottom, width, height, depth)
-
-            fig.artists.append(item)
-            y0 -= maxh + MenuItem.pady
-
-        fig.canvas.mpl_connect('motion_notify_event', self.on_move)
-
-    def on_move(self, event):
-        if any(item.set_hover(event) for item in self.menuitems):
-            self.figure.canvas.draw()
+year_dropdown = OptionMenu(root, variable, *YEARS, command=on_select_year)
+year_dropdown.pack(expand=True)
+  
+b = Button(root, text = "View Map", command=on_click)  
+b.pack()  
+  
+root.mainloop()

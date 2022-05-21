@@ -79,8 +79,17 @@ def rgb_to_hex(rgb: tuple[str]) -> str:
 def cmyk_to_hex(c: int, m: int, y: int, k: int) -> str:
     return rgb_to_hex(cmyk_to_rgb(c, m, y, k, 100, 255))
 
-def color_map(MAP: Basemap, day: Optional[int] = None, month: Optional[int] = None, year: Optional[int] = None):
-    #format date   
+def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[int] = None, year: Optional[int] = None):
+    #format date
+    print(to_plot, day, month, year)
+    index = -1
+    if to_plot == "deaths":
+        index = 2
+    elif to_plot == "hospitalized":
+        index = 6
+    else:
+        index = 19
+    print(index)
     MAP.readshapefile('st99_d00', name='states', drawbounds=True)
     state_names = [us_state_to_abbrev[shape_dict['NAME']] for shape_dict in MAP.states_info]
     date = ""
@@ -102,6 +111,7 @@ def color_map(MAP: Basemap, day: Optional[int] = None, month: Optional[int] = No
     most = 0
     with open('all-states-history.csv', 'r') as data:
         data = data.readlines()
+        print(data[0].split(",")[index])
         data = data[1:]
         for line in data:
             values = line.split(",")
@@ -109,9 +119,9 @@ def color_map(MAP: Basemap, day: Optional[int] = None, month: Optional[int] = No
                 continue
             if values[1].strip("\"") not in deaths:
                 deaths[values[1].strip("\"")] = 0
-            if values[2] != "":
-                deaths[values[1].strip("\"")] += int(values[2])
-                sum += int(values[2])
+            if values[index] != "":
+                deaths[values[1].strip("\"")] += int(values[index])
+                sum += int(values[index])
                 count += 1
             
     # print(deaths)
@@ -127,6 +137,7 @@ def color_map(MAP: Basemap, day: Optional[int] = None, month: Optional[int] = No
         poly = Polygon(MAP.states[index], facecolor=hex,edgecolor=hex)
         ax.add_patch(poly)
 
+    plt.title(to_plot)
     plt.show()
     return
 
