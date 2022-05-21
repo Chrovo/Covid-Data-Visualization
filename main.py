@@ -78,8 +78,22 @@ us_state_to_abbrev = {
 state_names = [us_state_to_abbrev[name] for name in state_names]
 print(state_names)
 
+# RGB Functions
+def cmyk_to_rgb(c, m, y, k, cmyk_scale, rgb_scale=255):
+    r = rgb_scale * (1.0 - c / float(cmyk_scale)) * (1.0 - k / float(cmyk_scale))
+    g = rgb_scale * (1.0 - m / float(cmyk_scale)) * (1.0 - k / float(cmyk_scale))
+    b = rgb_scale * (1.0 - y / float(cmyk_scale)) * (1.0 - k / float(cmyk_scale))
+    return int(r), int(g), int(b)
+
+def rgb_to_hex(rgb):
+    return '#%02x%02x%02x' % rgb
+
+def cmyk_to_hex(c,m,y,k):
+    return rgb_to_hex(cmyk_to_rgb(c,m,y,k,100, 255))
+
 # Dictionary containing deaths of each states
 deaths = {}
+max = 0
 
 with open('all-states-history.csv', 'r') as data:
     data = data.readlines()
@@ -90,14 +104,18 @@ with open('all-states-history.csv', 'r') as data:
         if values[0] != '\"2021-03-07\"': 
             break
         deaths[values[1].strip("\"")] = int(values[2])
+        if int(values[2]) > max:
+            max = int(values[2])
         
 print(deaths)
+# a = ''
+# #FF2D00 -> #CF2500 -> #A71E00 -> #841700
 
 for index in range(len(MAP.states)):
     death_count = deaths[state_names[index]]
-    if death_count > 1000:
-        poly = Polygon(MAP.states[index], facecolor='red',edgecolor='red')
-        ax.add_patch(poly)
+    hex = cmyk_to_hex(0, int(min(death_count / 17500.000 * 100, 100)), 100, 0)
+    poly = Polygon(MAP.states[index], facecolor=hex,edgecolor=hex)
+    ax.add_patch(poly)
 
 plt.show()
 
