@@ -13,14 +13,19 @@ map.readshapefile('st99_d00', name='states', drawbounds=True)
 # look up the shape obect for a state by it's name
 state_names = []
 for shape_dict in map.states_info:
+    print(shape_dict)
     state_names.append(shape_dict['NAME'])
 
 ax = plt.gca() # get current axes instance
 
+
 # get Texas and draw the filled polygon
-seg = map.states[state_names.index('Texas')]
-poly = Polygon(seg, facecolor='red',edgecolor='red')
-ax.add_patch(poly)
+
+for index in range(0, len(map.states)):
+    
+    if state_names[index] == "New Jersey":
+        poly = Polygon(map.states[index], facecolor='red',edgecolor='red')
+        ax.add_patch(poly)
 
 plt.show()
 
