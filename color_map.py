@@ -105,7 +105,7 @@ def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[
     
     # Dictionary containing deaths of each states
     deaths = {}
-    sum = 0
+    _sum = 0
     count = 0
     print(date)
     most = 0
@@ -121,11 +121,11 @@ def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[
                 deaths[values[1].strip("\"")] = 0
             if values[index] != "":
                 deaths[values[1].strip("\"")] += int(values[index])
-                sum += int(values[index])
+                _sum += int(values[index])
                 count += 1
             
     # print(deaths)
-    average = sum / count
+    average = _sum / count
     death_list = list(deaths.values())
     most = max(death_list)
     # max = max(list(deaths.values()))

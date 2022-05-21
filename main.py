@@ -1,11 +1,11 @@
-import typing
-from color_map import color_map
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from tkinter import *
 
-MAP: Basemap = Basemap(llcrnrlon=-130, llcrnrlat=25, urcrnrlon=-65.,urcrnrlat=52., lat_0 = 40., lon_0 = -80)
+from color_map import color_map
+
+MAP: Basemap = Basemap(llcrnrlon=-130, llcrnrlat=25, urcrnrlon=-65,urcrnrlat=52, lat_0 = 40, lon_0 = -80)
 
 root: Tk = Tk()
 root.geometry('400x300')
@@ -19,25 +19,20 @@ current_year = 2020
 def on_select_option(choice: str) -> None:
     global current_choice
     current_choice = choice
-    print(current_choice)
 
 def on_select_days(choice: int) -> None:
-    print(choice)
     global current_day
     current_day = choice
 
 def on_select_year(choice: int) -> None:
-    print(choice)
     global current_year
     current_year = choice
 
 def on_select_month(choice: int) -> None:
-    print(choice)
     global current_month
     current_month = choice
 
 def on_click() -> None:
-    print(current_choice, current_day, current_month, current_year)
     color_map(MAP, current_choice, int(current_day), int(current_month), int(current_year))
 
 OPTIONS = ('cases', 'deaths', 'hospitalized')
@@ -47,6 +42,7 @@ variable.set(OPTIONS[0])
 
 option_dropdown = OptionMenu(root, variable, *OPTIONS, command=on_select_option)
 option_dropdown.pack(expand=True)
+option_dropdown.config(font="Georgia")
 
 DAYS = tuple(range(32))
 variable = IntVar()
