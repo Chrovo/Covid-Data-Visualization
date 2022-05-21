@@ -1,2 +1,2 @@
 # Covid-Data-Visualization
-A 3D visualization of many covid data sets.
+A 2D visualization of many covid data sets in different states in the US.
