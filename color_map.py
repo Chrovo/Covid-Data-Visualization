@@ -135,26 +135,6 @@ def color_map(MAP: Basemap, to_plot: str, day: Optional[int] = None, month: Opti
         ax.add_patch(poly)
 
     plt.title(to_plot)
-
-    x = []
-    y = []
-    with open('statelatlong.csv', mode='r') as csv_file:
-        csv_file = csv_file.readlines()
-        csv_file = csv_file[1:]
-        for line in csv_file:
-            values = line.split(",")
-            if values[0] == "AK" or values[0] == "HI":
-                continue
-            x.append(float(values[2]))
-            y.append(float(values[1]))
-
-
-    MAP.scatter(x, y, color='black', latlon=True)
-
-    def hover(event):
-        print('hover')
-
-    MAP.canvas.mpl_connect("motion_notify_event", hover)
     
     plt.show()
     return

@@ -42,7 +42,7 @@ variable.set(OPTIONS[0])
 
 option_dropdown = OptionMenu(root, variable, *OPTIONS, command=on_select_option)
 option_dropdown.pack(expand=True)
-option_dropdown.config(font=('Helvatical bold',20))
+option_dropdown.config(font = 'Georgia')
 
 DAYS = tuple(range(32))
 variable = IntVar()
