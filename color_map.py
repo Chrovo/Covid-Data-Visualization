@@ -95,10 +95,10 @@ def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[
     date = ""
     if year is not None:
         date += str(year)
-    if month is not None:
+    if month is not None and month != 0:
         date += "-" + "%02x" % month
         print()
-    if day is not None:
+    if day is not None and day != 0:
         date += "-" + "%02x" % day
 
     ax = plt.gca()

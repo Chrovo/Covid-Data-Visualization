@@ -17,19 +17,23 @@ current_month = 0
 current_year = 2020
 
 def on_select_option(choice: str) -> None:
+    global current_choice
     current_choice = choice
     print(current_choice)
 
 def on_select_days(choice: int) -> None:
     print(choice)
+    global current_day
     current_day = choice
 
 def on_select_year(choice: int) -> None:
     print(choice)
+    global current_year
     current_year = choice
 
 def on_select_month(choice: int) -> None:
     print(choice)
+    global current_month
     current_month = choice
 
 def on_click() -> None:
