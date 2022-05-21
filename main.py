@@ -42,7 +42,7 @@ variable.set(OPTIONS[0])
 
 option_dropdown = OptionMenu(root, variable, *OPTIONS, command=on_select_option)
 option_dropdown.pack(expand=True)
-option_dropdown.config(font="Georgia")
+option_dropdown.config(font=('Helvatical bold',20))
 
 DAYS = tuple(range(32))
 variable = IntVar()
@@ -64,6 +64,6 @@ year_dropdown = OptionMenu(root, variable, *YEARS, command=on_select_year)
 year_dropdown.pack(expand=True)
   
 b = Button(root, text = "View Map", command=on_click)  
-b.pack()  
+b.pack()
   
 root.mainloop()

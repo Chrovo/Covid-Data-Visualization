@@ -79,9 +79,7 @@ def rgb_to_hex(rgb: tuple[str]) -> str:
 def cmyk_to_hex(c: int, m: int, y: int, k: int) -> str:
     return rgb_to_hex(cmyk_to_rgb(c, m, y, k, 100, 255))
 
-def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[int] = None, year: Optional[int] = None):
-    #format date
-    print(to_plot, day, month, year)
+def color_map(MAP: Basemap, to_plot: str, day: Optional[int] = None, month: Optional[int] = None, year: Optional[int] = None):
     index = -1
     if to_plot == "deaths":
         index = 2
@@ -89,7 +87,6 @@ def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[
         index = 6
     else:
         index = 19
-    print(index)
     MAP.readshapefile('st99_d00', name='states', drawbounds=True)
     state_names = [us_state_to_abbrev[shape_dict['NAME']] for shape_dict in MAP.states_info]
     date = ""
@@ -123,7 +120,7 @@ def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[
                 deaths[values[1].strip("\"")] += int(values[index])
                 _sum += int(values[index])
                 count += 1
-            
+
     # print(deaths)
     average = _sum / count
     death_list = list(deaths.values())
@@ -138,6 +135,27 @@ def color_map(MAP: Basemap, to_plot, day: Optional[int] = None, month: Optional[
         ax.add_patch(poly)
 
     plt.title(to_plot)
+
+    x = []
+    y = []
+    with open('statelatlong.csv', mode='r') as csv_file:
+        csv_file = csv_file.readlines()
+        csv_file = csv_file[1:]
+        for line in csv_file:
+            values = line.split(",")
+            if values[0] == "AK" or values[0] == "HI":
+                continue
+            x.append(float(values[2]))
+            y.append(float(values[1]))
+
+
+    MAP.scatter(x, y, color='black', latlon=True)
+
+    def hover(event):
+        print('hover')
+
+    MAP.canvas.mpl_connect("motion_notify_event", hover)
+    
     plt.show()
     return
 
