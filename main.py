@@ -9,7 +9,7 @@ MAP: Basemap = Basemap(llcrnrlon=-130, llcrnrlat=25, urcrnrlon=-65,urcrnrlat=52,
 
 root: Tk = Tk()
 root.geometry('400x300')
-root.config(bg='#F2B90C')
+root.config(bg='#00ffbb')
 
 current_choice = 'cases'
 current_day = 0
