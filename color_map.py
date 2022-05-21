@@ -79,7 +79,13 @@ def rgb_to_hex(rgb: tuple[str]) -> str:
 def cmyk_to_hex(c: int, m: int, y: int, k: int) -> str:
     return rgb_to_hex(cmyk_to_rgb(c, m, y, k, 100, 255))
 
-def color_map(MAP: Basemap, to_plot: str, day: Optional[int] = None, month: Optional[int] = None, year: Optional[int] = None):
+def color_map(
+    MAP: Basemap, 
+    to_plot: str, 
+    day: Optional[int] = None, 
+    month: Optional[int] = None, 
+    year: Optional[int] = None
+) -> None:
     index = -1
     if to_plot == "deaths":
         index = 2
@@ -94,7 +100,6 @@ def color_map(MAP: Basemap, to_plot: str, day: Optional[int] = None, month: Opti
         date += str(year)
     if month is not None and month != 0:
         date += "-" + "%02x" % month
-        print()
     if day is not None and day != 0:
         date += "-" + "%02x" % day
 
@@ -104,11 +109,9 @@ def color_map(MAP: Basemap, to_plot: str, day: Optional[int] = None, month: Opti
     deaths = {}
     _sum = 0
     count = 0
-    print(date)
     most = 0
     with open('all-states-history.csv', 'r') as data:
         data = data.readlines()
-        print(data[0].split(",")[index])
         data = data[1:]
         for line in data:
             values = line.split(",")
@@ -121,12 +124,10 @@ def color_map(MAP: Basemap, to_plot: str, day: Optional[int] = None, month: Opti
                 _sum += int(values[index])
                 count += 1
 
-    # print(deaths)
     average = _sum / count
     death_list = list(deaths.values())
     most = max(death_list)
-    # max = max(list(deaths.values()))
-    print(average, most)
+
     average = (most + average) / 2
     for index in range(len(MAP.states)):
         death_count = deaths[state_names[index]]

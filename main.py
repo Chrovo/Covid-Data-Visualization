@@ -1,5 +1,5 @@
-from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
 from matplotlib.patches import Polygon
 from tkinter import *
 
@@ -42,19 +42,21 @@ variable.set(OPTIONS[0])
 
 option_dropdown = OptionMenu(root, variable, *OPTIONS, command=on_select_option)
 option_dropdown.pack(expand=True)
-option_dropdown.config(font = 'Georgia')
-
-DAYS = tuple(range(32))
-variable = IntVar()
-
-day_dropdown = OptionMenu(root, variable, *DAYS, command=on_select_days)
-day_dropdown.pack(expand=True)
+option_dropdown.config(font=('Georgia', 15))
 
 MONTHS = tuple(range(13))
 variable = IntVar()
 
 month_dropdown = OptionMenu(root, variable, *MONTHS, command=on_select_month)
 month_dropdown.pack(expand=True)
+month_dropdown.config(font = ('Georgia', 15))
+
+DAYS = tuple(range(32))
+variable = IntVar()
+
+day_dropdown = OptionMenu(root, variable, *DAYS, command=on_select_days)
+day_dropdown.pack(expand=True)
+day_dropdown.config(font = ('Georgia', 15))
 
 YEARS = (2020, 2021)
 variable = IntVar()
@@ -62,8 +64,10 @@ variable.set(YEARS[0])
 
 year_dropdown = OptionMenu(root, variable, *YEARS, command=on_select_year)
 year_dropdown.pack(expand=True)
+year_dropdown.config(font=('Georgia', 15))
   
 b = Button(root, text = "View Map", command=on_click)  
 b.pack()
+b.config(font = ('Georgia', 15))
   
 root.mainloop()
