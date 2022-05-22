@@ -1,9 +1,7 @@
-#Vivaan and sreeram - takes in date, and colors map based on that 
 from typing import Optional
 
-#  import csv
-from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
 from matplotlib.patches import Polygon
 
 us_state_to_abbrev = {
@@ -67,24 +65,34 @@ us_state_to_abbrev = {
 }
 
 # RGB Functions
-def cmyk_to_rgb(c: int, m: int, y: int, k: int, cmyk_scale: int, rgb_scale: int = 255) -> tuple[int]:
+def cmyk_to_rgb(
+    c: int, 
+    m: int, 
+    y: int, 
+    k: int, 
+    cmyk_scale: int, 
+    rgb_scale: int = 255
+) -> tuple[int, int, int]:
     r = rgb_scale * (1.0 - c / float(cmyk_scale)) * (1.0 - k / float(cmyk_scale))
     g = rgb_scale * (1.0 - m / float(cmyk_scale)) * (1.0 - k / float(cmyk_scale))
     b = rgb_scale * (1.0 - y / float(cmyk_scale)) * (1.0 - k / float(cmyk_scale))
     return int(r), int(g), int(b)
 
-def rgb_to_hex(rgb: tuple[str]) -> str:
-    return '#%02x%02x%02x' % rgb
+
+def rgb_to_hex(rgb: tuple[int, int, int]) -> str:
+    return "#%02x%02x%02x" % rgb
+
 
 def cmyk_to_hex(c: int, m: int, y: int, k: int) -> str:
     return rgb_to_hex(cmyk_to_rgb(c, m, y, k, 100, 255))
 
+
 def color_map(
-    MAP: Basemap, 
-    to_plot: str, 
-    day: Optional[int] = None, 
-    month: Optional[int] = None, 
-    year: Optional[int] = None
+    MAP: Basemap,
+    to_plot: str,
+    day: Optional[int] = None,
+    month: Optional[int] = None,
+    year: Optional[int] = None,
 ) -> None:
     index = -1
     if to_plot == "deaths":
@@ -93,8 +101,10 @@ def color_map(
         index = 6
     else:
         index = 19
-    MAP.readshapefile('st99_d00', name='states', drawbounds=True)
-    state_names = [us_state_to_abbrev[shape_dict['NAME']] for shape_dict in MAP.states_info]
+
+    MAP.readshapefile("st99_d00", name="states", drawbounds=True)
+    state_names = [us_state_to_abbrev[shape_dict["NAME"]] for shape_dict in MAP.states_info]
+
     date = ""
     if year is not None:
         date += str(year)
@@ -104,39 +114,42 @@ def color_map(
         date += "-" + "%02x" % day
 
     ax = plt.gca()
-    
-    # Dictionary containing deaths of each states
+
+    # Dictionary containing the number of deaths, hospitalizations, or cases in each state
     deaths = {}
     _sum = 0
     count = 0
     most = 0
-    with open('all-states-history.csv', 'r') as data:
+
+    # index:    0       1       2          6             19
+    # format: "date","state","death","hospitalized", "positive"
+    with open("all-states-history.csv", "r") as data:
         data = data.readlines()
         data = data[1:]
         for line in data:
             values = line.split(",")
-            if not values[0].strip("\"").startswith(date): 
+            state = values[1].strip('"')
+            if not values[0].strip('"').startswith(date):
                 continue
-            if values[1].strip("\"") not in deaths:
-                deaths[values[1].strip("\"")] = 0
-            if values[index] != "":
-                deaths[values[1].strip("\"")] += int(values[index])
+            if state not in deaths:
+                deaths[state] = 0
+            if values[index]:
+                deaths[state] += int(values[index])
                 _sum += int(values[index])
                 count += 1
 
     average = _sum / count
-    death_list = list(deaths.values())
+    death_list = tuple(deaths.values())
     most = max(death_list)
 
     average = (most + average) / 2
     for index in range(len(MAP.states)):
-        death_count = deaths[state_names[index]]
+        death_count = deaths[state_names[index]] # bc of missing data in CSV file
         hex = cmyk_to_hex(0, int(min(death_count / average * 100, 100)), 100, 0)
-        poly = Polygon(MAP.states[index], facecolor=hex,edgecolor=hex)
+        poly = Polygon(MAP.states[index], facecolor=hex, edgecolor=hex)
         ax.add_patch(poly)
 
     plt.title(to_plot)
-    
+
     plt.show()
     return
-
